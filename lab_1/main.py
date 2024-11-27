@@ -11,37 +11,38 @@ from Tape import Tape
 from execute_code import import_code, execute_code, move, write, clear_tape
 from generate_template import generate_template
 from initialisation import initialisation
+from typing import Dict, Any
 
 
 class TuringMachineApp():
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the Turing Machine application."""
         initialisation(self)
 
         window_width = 800
         window_height = 380
         self.root = tk.Tk()
-        self.root.geometry('%dx%d+%d+%d' % (window_width, window_height,
+        self.root.geometry('%dx%d+%d+%d' % (window_width, window_height, 
                                               int(self.root.winfo_screenwidth() / 2 - window_width / 2),
                                               int(self.root.winfo_screenheight() / 2 - window_height / 2)))
         self.root.resizable(width=False, height=False)
         self.root.title(i18n.t("main_title"))
         self.root.bind("<Control-o>", lambda event: import_code(self))
 
-        self.input_data = {}
+        self.input_data: Dict[str, Any] = {}
         self.execution_history = ()
-        self.cell_coordinates = {
-            '14': [40, 20, self.color_blank], '13': [42, 40, self.color_blank], '12': [45, 60, self.color_blank],
+        self.cell_coordinates: Dict[str, list] = {
+            '14': [40, 20, self.color_blank], '13': [42, 40, self.color_blank], '12': [45, 60, self.color_blank], 
             '11': [49, 80, self.color_blank], '10': [54, 100, self.color_blank],
-            '9': [60, 120, self.color_blank], '8': [68, 140, self.color_blank], '7': [78, 160, self.color_blank],
+            '9': [60, 120, self.color_blank], '8': [68, 140, self.color_blank], '7': [78, 160, self.color_blank], 
             '6': [90, 180, self.color_blank], '5': [104, 200, self.color_blank],
-            '4': [118, 220, self.color_blank], '3': [136, 237, self.color_blank], '2': [156, 252, self.color_blank],
+            '4': [118, 220, self.color_blank], '3': [136, 237, self.color_blank], '2': [156, 252, self.color_blank], 
             '1': [178, 265, self.color_blank], '0': [204, 270, self.color_blank],
-            '-1': [228, 265, self.color_blank], '-2': [250, 252, self.color_blank], '-3': [270, 237, self.color_blank],
+            '-1': [228, 265, self.color_blank], '-2': [250, 252, self.color_blank], '-3': [270, 237, self.color_blank], 
             '-4': [288, 220, self.color_blank], '-5': [304, 200, self.color_blank],
-            '-6': [318, 180, self.color_blank], '-7': [330, 160, self.color_blank], '-8': [340, 140, self.color_blank],
+            '-6': [318, 180, self.color_blank], '-7': [330, 160, self.color_blank], '-8': [340, 140, self.color_blank], 
             '-9': [348, 120, self.color_blank], '-10': [354, 100, self.color_blank],
-            '-11': [359, 80, self.color_blank], '-12': [363, 60, self.color_blank], '-13': [366, 40, self.color_blank],
+            '-11': [359, 80, self.color_blank], '-12': [363, 60, self.color_blank], '-13': [366, 40, self.color_blank], 
             '-14': [368, 20, self.color_blank]
         }
         self.tape = Tape()
@@ -52,7 +53,7 @@ class TuringMachineApp():
         self.create_execution_frame()
         self.create_state_frame()
 
-    def create_menus(self):
+    def create_menus(self) -> None:
         """Create the application menus."""
         main_menu = tk.Menu(self.root)
         file_menu = tk.Menu(tearoff=0)
@@ -80,7 +81,7 @@ class TuringMachineApp():
 
         self.root.config(menu=main_menu)
 
-    def create_execution_frame(self):
+    def create_execution_frame(self) -> None:
         """Create the execution area to display the Turing machine's operation."""
         try:
             self.execution_frame.destroy()
@@ -124,7 +125,7 @@ class TuringMachineApp():
         for i in range(5):
             self.execution_frame.columnconfigure(i, weight=1)
 
-    def create_state_frame(self):
+    def create_state_frame(self) -> None:
         """Create the state area to display the current states of the Turing machine."""
         try:
             self.state_frame.destroy()
@@ -163,7 +164,7 @@ class TuringMachineApp():
             x += 1
         self.scroll_frame.update()
 
-    def add_new_state(self, instructions):
+    def add_new_state(self, instructions: Dict[str, list]) -> None:
         """Add a new state to the state area.
 
         Args:
@@ -195,7 +196,7 @@ class TuringMachineApp():
                 a -= 1
             x += 1
 
-    def draw_cell(self, canvas, x, y, radius, color):
+    def draw_cell(self, canvas: tk.Canvas, x: int, y: int, radius: int, color: str) -> None:
         """Draw a cell on the canvas.
 
         Args:
@@ -207,7 +208,7 @@ class TuringMachineApp():
         """
         canvas.create_oval(x - radius, y - radius, x + radius, y + radius, width=0, fill=f'{color}')
 
-    def setup_scrollable_area(self, parent, width):
+    def setup_scrollable_area(self, parent: tk.Frame, width: int) -> None:
         """Set up a scrollable area for displaying states.
 
         Args:
@@ -228,7 +229,7 @@ class TuringMachineApp():
         self.scroll_canvas.create_window((0, 0), window=self.scroll_frame, anchor="nw", width=int(width / 6))
         self.scroll_canvas.configure(yscrollcommand=self.scrollbar.set)
 
-    def change_language(self, language):
+    def change_language(self, language: str) -> None:
         """Change the application's language.
 
         Args:
@@ -239,7 +240,7 @@ class TuringMachineApp():
             json.dump(self.config, config_file)
         self.restart_application()
 
-    def update_colors(self, highlight_color, blank_color, zero_color, one_color):
+    def update_colors(self, highlight_color: str, blank_color: str, zero_color: str, one_color: str) -> None:
         """Update the interface colors.
 
         Args:
@@ -259,7 +260,7 @@ class TuringMachineApp():
             json.dump(self.config, config_file)
         self.restart_application()
 
-    def open_config_editor(self):
+    def open_config_editor(self) -> None:
         """Open the configuration editor window."""
         config_window = tk.Toplevel(self.root)
         config_window.attributes('-topmost', 'true')
@@ -289,7 +290,7 @@ class TuringMachineApp():
         tk.Button(config_window, text=i18n.t("save"), command=lambda: self.update_colors(highlight_color_entry.get(), blank_color_entry.get(), zero_color_entry.get(), one_color_entry.get())).pack()
         tk.Button(config_window, text=i18n.t("cancel"), command=config_window.destroy).pack()
 
-    def restart_application(self):
+    def restart_application(self) -> None:
         """Restart the application after configuration changes."""
         restart_window = tk.Toplevel(self.root)
         restart_window.attributes('-topmost', 'true')
