@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
 
-import tkinter as tk
 import os
 import sys
-import i18n
-import webbrowser
-import subprocess
 import json
+import subprocess
+import webbrowser
+import tkinter as tk
+from typing import Dict, Any
+
+import i18n
 from Tape import Tape
 from execute_code import (
     import_code, execute_code, move, write, clear_tape
 )
 from generate_template import generate_template
 from initialisation import initialisation
-from typing import Dict, Any
 
 
 class TuringMachineApp:
@@ -143,6 +144,7 @@ class TuringMachineApp:
                 canvas, coordinates[0], coordinates[1], 6, coordinates[2]
             )
 
+        slow_var = tk.IntVar()
         start_button = tk.Button(
             self.execution_frame,
             text=i18n.t("start"),
@@ -174,15 +176,14 @@ class TuringMachineApp:
         next_value_label = tk.Label(self.execution_frame, text=i18n.t("next_value"))
         next_value_label.grid(row=10, column=5, padx=(0, 10), sticky='nesw')
 
-        slow_var = tk.IntVar()
-        slow_checkbutton = tk.Checkbutton(
+        tk.Checkbutton(
             self.execution_frame,
             text=i18n.t("slow"),
             variable=slow_var,
             offvalue=0,
             onvalue=1
-        )
-        slow_checkbutton.grid(row=11, column=0, padx=10, sticky='nesw')
+        ).grid(row=11, column=0, padx=10, sticky='nesw')
+
         b_button = tk.Button(
             self.execution_frame,
             text="b",
@@ -204,6 +205,7 @@ class TuringMachineApp:
             command=lambda: write(self, self, "1")
         )
         one_button.grid(row=11, column=3, sticky='nesw')
+
         current_value_label = tk.Label(self.execution_frame, text="")
         current_value_label.grid(row=11, column=4, padx=(10, 0), sticky='nesw')
         next_value_display_label = tk.Label(self.execution_frame, text="")
@@ -226,9 +228,7 @@ class TuringMachineApp:
         state_names = ("state", "read", "write", "move", "new_state")
         for i in range(5):
             self.__dict__[f"label_{state_names[i]}"] = tk.Label(
-                self.scroll_frame,
-                text=f"{i18n.t(state_names[i])}",
-                relief=tk.RIDGE
+                self.scroll_frame, text=f"{i18n.t(state_names[i])}", relief=tk.RIDGE
             )
             self.__dict__[f"label_{state_names[i]}"].grid(
                 row=0, column=i, sticky='nesw'
@@ -242,19 +242,12 @@ class TuringMachineApp:
 
         x = 1
         while f"label_state{x}" in self.__dict__.keys():
+            for symbol in ("b", "0", "1"):
+                del self.__dict__[f"label_read{x}_{symbol}"]
+                del self.__dict__[f"label_write{x}_{symbol}"]
+                del self.__dict__[f"label_move{x}_{symbol}"]
+                del self.__dict__[f"label_new_state{x}_{symbol}"]
             del self.__dict__[f"label_state{x}"]
-            del self.__dict__[f"label_read{x}_b"]
-            del self.__dict__[f"label_read{x}_0"]
-            del self.__dict__[f"label_read{x}_1"]
-            del self.__dict__[f"label_write{x}_b"]
-            del self.__dict__[f"label_write{x}_0"]
-            del self.__dict__[f"label_write{x}_1"]
-            del self.__dict__[f"label_move{x}_b"]
-            del self.__dict__[f"label_move{x}_0"]
-            del self.__dict__[f"label_move{x}_1"]
-            del self.__dict__[f"label_new_state{x}_b"]
-            del self.__dict__[f"label_new_state{x}_0"]
-            del self.__dict__[f"label_new_state{x}_1"]
             x += 1
         self.scroll_frame.update()
 
@@ -264,10 +257,9 @@ class TuringMachineApp:
         Args:
             instructions (dict): A dictionary containing instructions for the new state.
         """
-        a = 1
         x = 1
         symbols = ("b", "0", "1")
-        while a > 0:
+        while True:
             if not f'label_state{x}' in self.__dict__.keys():
                 for i in range(3):
                     self.__dict__[f"label_state{x}"] = tk.Label(
@@ -311,7 +303,7 @@ class TuringMachineApp:
                         row=3 * x - 2 + i, column=4, sticky='nesw'
                     )
 
-                a -= 1
+                break
             x += 1
 
     def draw_cell(self, canvas: tk.Canvas, x: int, y: int, radius: int, color: str) -> None:
@@ -377,9 +369,6 @@ class TuringMachineApp:
             zero_color (str): The zero cell color.
             one_color (str): The one cell color.
         """
-        for arg in vars().values():
-            if arg == "":
-                return
         with open(self.config_file, "w") as config_file:
             self.config["color_highlight"] = highlight_color
             self.config["color_blank"] = blank_color
