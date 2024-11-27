@@ -15,6 +15,7 @@ from initialisation import initialisation
 
 class TuringMachineApp():
     def __init__(self):
+        """Initialize the Turing Machine application."""
         initialisation(self)
 
         window_width = 800
@@ -52,6 +53,7 @@ class TuringMachineApp():
         self.create_state_frame()
 
     def create_menus(self):
+        """Create the application menus."""
         main_menu = tk.Menu(self.root)
         file_menu = tk.Menu(tearoff=0)
         main_menu.add_cascade(label=i18n.t("file"), menu=file_menu)
@@ -79,6 +81,7 @@ class TuringMachineApp():
         self.root.config(menu=main_menu)
 
     def create_execution_frame(self):
+        """Create the execution area to display the Turing machine's operation."""
         try:
             self.execution_frame.destroy()
         except AttributeError:
@@ -122,6 +125,7 @@ class TuringMachineApp():
             self.execution_frame.columnconfigure(i, weight=1)
 
     def create_state_frame(self):
+        """Create the state area to display the current states of the Turing machine."""
         try:
             self.state_frame.destroy()
         except AttributeError:
@@ -160,6 +164,11 @@ class TuringMachineApp():
         self.scroll_frame.update()
 
     def add_new_state(self, instructions):
+        """Add a new state to the state area.
+
+        Args:
+            instructions (dict): A dictionary containing instructions for the new state.
+        """
         a = 1
         x = 1
         symbols = ("b", "0", "1")
@@ -187,9 +196,24 @@ class TuringMachineApp():
             x += 1
 
     def draw_cell(self, canvas, x, y, radius, color):
+        """Draw a cell on the canvas.
+
+        Args:
+            canvas (tk.Canvas): The canvas on which the cell is drawn.
+            x (int): The x-coordinate of the cell's center.
+            y (int): The y-coordinate of the cell's center.
+            radius (int): The radius of the cell.
+            color (str): The color of the cell.
+        """
         canvas.create_oval(x - radius, y - radius, x + radius, y + radius, width=0, fill=f'{color}')
 
     def setup_scrollable_area(self, parent, width):
+        """Set up a scrollable area for displaying states.
+
+        Args:
+            parent (tk.Frame): The parent widget for the scrollable area.
+            width (int): The width of the scrollable area.
+        """
         self.scroll_canvas = tk.Canvas(parent, width=int(width / 7), bg='gray94')
         self.scrollbar = tk.Scrollbar(parent, orient="vertical", command=self.scroll_canvas.yview)
         self.scroll_frame = tk.Frame(self.scroll_canvas)
@@ -205,12 +229,25 @@ class TuringMachineApp():
         self.scroll_canvas.configure(yscrollcommand=self.scrollbar.set)
 
     def change_language(self, language):
+        """Change the application's language.
+
+        Args:
+            language (str): The language code for the change.
+        """
         with open(self.config_file, "w") as config_file:
             self.config["language"] = language
             json.dump(self.config, config_file)
         self.restart_application()
 
     def update_colors(self, highlight_color, blank_color, zero_color, one_color):
+        """Update the interface colors.
+
+        Args:
+            highlight_color (str): The highlight color.
+            blank_color (str): The blank cell color.
+            zero_color (str): The zero cell color.
+            one_color (str): The one cell color.
+        """
         for arg in vars().values():
             if arg == "":
                 return
@@ -223,6 +260,7 @@ class TuringMachineApp():
         self.restart_application()
 
     def open_config_editor(self):
+        """Open the configuration editor window."""
         config_window = tk.Toplevel(self.root)
         config_window.attributes('-topmost', 'true')
         self.root.eval(f'tk::PlaceWindow {str(config_window)} center')
@@ -252,6 +290,7 @@ class TuringMachineApp():
         tk.Button(config_window, text=i18n.t("cancel"), command=config_window.destroy).pack()
 
     def restart_application(self):
+        """Restart the application after configuration changes."""
         restart_window = tk.Toplevel(self.root)
         restart_window.attributes('-topmost', 'true')
         self.root.eval(f'tk::PlaceWindow {str(restart_window)} center')
