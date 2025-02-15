@@ -1,12 +1,22 @@
+import hashlib
 import json
 import logging
-import pathlib as Path
+import re
 import pandas as pd
 
 csv_file_path = "10.csv"
 json_file_path = "patterns.json"
+result_file = "result.json"
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+def calculate_checksum(row_numbers: list[int]) -> str:
+    """
+    :param row_numbers: список целочисленных номеров строк csv-файла, на которых были найдены ошибки валидации
+    :return: md5 хеш для проверки через github action
+    """
+    row_numbers.sort()
+    return hashlib.md5(json.dumps(row_numbers).encode('utf-8')).hexdigest()
 
 def get_patterns(json_file_path: str):
     """
@@ -20,12 +30,6 @@ def get_patterns(json_file_path: str):
     Returns None if an error occurs.
     """
     try:
-        # Проверка существования файла
-        if not Path(json_file_path).exists():
-            logging.error(f"Файл не найден: {json_file_path}")
-            return None
-
-        # Открытие и чтение файла
         with open(json_file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
             logging.info(f"Файл успешно загружен: {json_file_path}")
@@ -60,5 +64,38 @@ def get_data(csv_file_path: str):
     except Exception as e:
         logging.error(f"Произошла ошибка при чтении файла: {e}")
     return None
+
+def validate_data_with_patterns(df: pd.DataFrame, patterns: dict[str, str]) -> list[int]:
+    """
+    Проверяет строки DataFrame на соответствие паттернам регулярных выражений.
+
+    Parameters:
+    df (pd.DataFrame): DataFrame с данными для проверки.
+    patterns (Dict[str, str]): Словарь с паттернами регулярных выражений.
+
+    Returns:
+    List[int]: Список индексов строк, которые не соответствуют хотя бы одному паттерну.
+    """
+    invalid_indexes = set()  # Используем set для хранения уникальных индексов
+
+    for column, pattern in patterns.items():
+        if column in df.columns:
+            compiled_pattern = re.compile(pattern)
+            for index, value in df[column].items():
+                if not compiled_pattern.match(str(value)):
+                    invalid_indexes.add(index)
+        else:
+            logging.warning(f"Столбец '{column}' отсутствует в DataFrame.")
+
+    return list(invalid_indexes)
+
+# Пример использования
+if __name__ == "__main__":
+    # Загрузка паттернов
+    patterns = get_patterns(json_file_path)
+    df = get_data(csv_file_path)
+
+    invalid_data = validate_data_with_patterns(df, patterns)
+    result_hash_sum = calculate_checksum(invalid_data)
 
 
