@@ -1,43 +1,43 @@
 import json
-import hashlib
-from typing import List
+import logging
+import pathlib as Path
 import pandas as pd
 
 csv_file_path = "10.csv"
+json_file_path = "patterns.json"
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def calculate_checksum(row_numbers: List[int]) -> str:
+def load_json_file(json_file_path: str):
     """
-    Вычисляет md5 хеш от списка целочисленных значений.
+    Loads a JSON file and returns its content.
 
-    ВНИМАНИЕ, ВАЖНО! Чтобы сумма получилась корректной, считать, что первая строка с данными csv-файла имеет номер 0
-    Другими словами: В исходном csv 1я строка - заголовки столбцов, 2я и остальные - данные.
-    Соответственно, считаем что у 2 строки файла номер 0, у 3й - номер 1 и так далее.
+    Parameters:
+    json_file_path (str): The path to the JSON file.
 
-    Надеюсь, я расписал это максимально подробно.
-    Хотя что-то мне подсказывает, что обязательно найдется человек, у которого с этим возникнут проблемы.
-    Которому я отвечу, что все написано в докстринге ¯\_(ツ)_/¯
-
-    :param row_numbers: список целочисленных номеров строк csv-файла, на которых были найдены ошибки валидации
-    :return: md5 хеш для проверки через github action
+    Returns:
+    Optional[Dict[str, Any] | List[Dict[str, Any]]]: The content of the JSON file as a dictionary or a list of dictionaries.
+    Returns None if an error occurs.
     """
-    row_numbers.sort()
-    return hashlib.md5(json.dumps(row_numbers).encode('utf-8')).hexdigest()
+    try:
+        # Проверка существования файла
+        if not Path(json_file_path).exists():
+            logging.error(f"Файл не найден: {json_file_path}")
+            return None
 
+        # Открытие и чтение файла
+        with open(json_file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            logging.info(f"Файл успешно загружен: {json_file_path}")
+            return data
 
-def serialize_result(variant: int, checksum: str) -> None:
-    """
-    Метод для сериализации результатов лабораторной пишите сами.
-    Вам нужно заполнить данными - номером варианта и контрольной суммой - файл, лежащий в папке с лабораторной.
-    Файл называется, очевидно, result.json.
+    except json.JSONDecodeError as e:
+        logging.error(f"Ошибка при декодировании JSON: {e}")
+    except Exception as e:
+        logging.error(f"Произошла ошибка: {e}")
 
-    ВНИМАНИЕ, ВАЖНО! На json натравлен github action, который проверяет корректность выполнения лабораторной.
-    Так что не перемещайте, не переименовывайте и не изменяйте его структуру, если планируете успешно сдать лабу.
-
-    :param variant: номер вашего варианта
-    :param checksum: контрольная сумма, вычисленная через calculate_checksum()
-    """
-    pass
-
+    return None
 
 if __name__ == "__main__":
+
+
