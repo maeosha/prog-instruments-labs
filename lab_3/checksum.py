@@ -8,7 +8,7 @@ json_file_path = "patterns.json"
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def load_json_file(json_file_path: str):
+def get_patterns(json_file_path: str):
     """
     Loads a JSON file and returns its content.
 
@@ -38,6 +38,27 @@ def load_json_file(json_file_path: str):
 
     return None
 
-if __name__ == "__main__":
+def get_data(csv_file_path: str):
+    """
+    Reads a CSV file with utf-16 encoding and ';' delimiter.
+
+    Parameters:
+    csv_file_path (str): Path to the CSV file.
+
+    Returns:
+    Optional[pd.DataFrame]: DataFrame with data from the CSV file or None in case of an error.
+    """
+    try:
+        logging.info(f"Чтение файла: {csv_file_path}")
+        df = pd.read_csv(csv_file_path, encoding="utf-16", sep=";")
+        logging.info("Файл успешно прочитан.")
+        return df
+    except FileNotFoundError:
+        logging.error(f"Файл не найден: {csv_file_path}")
+    except pd.errors.EmptyDataError:
+        logging.error("Файл пуст.")
+    except Exception as e:
+        logging.error(f"Произошла ошибка при чтении файла: {e}")
+    return None
 
 
