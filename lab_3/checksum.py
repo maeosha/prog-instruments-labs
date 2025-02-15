@@ -1,10 +1,9 @@
 import json
 import hashlib
 from typing import List
+import pandas as pd
 
-"""
-В этом модуле обитают функции, необходимые для автоматизированной проверки результатов ваших трудов.
-"""
+csv_file_path = "10.csv"
 
 
 def calculate_checksum(row_numbers: List[int]) -> str:
@@ -42,5 +41,3 @@ def serialize_result(variant: int, checksum: str) -> None:
 
 
 if __name__ == "__main__":
-    print(calculate_checksum([1, 2, 3]))
-    print(calculate_checksum([3, 2, 1]))
