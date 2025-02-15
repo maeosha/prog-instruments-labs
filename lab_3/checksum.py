@@ -2,32 +2,39 @@ import hashlib
 import json
 import logging
 import re
+
 import pandas as pd
 
-csv_file_path = "10.csv"
-json_file_path = "patterns.json"
-result_file = "result.json"
+VARIANT = 10
+CSV_FILE_PATH = "10.csv"
+JSON_FILE_PATH = "patterns.json"
+RESULT_FILE = "result.json"
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
 
 def calculate_checksum(row_numbers: list[int]) -> str:
     """
-    :param row_numbers: список целочисленных номеров строк csv-файла, на которых были найдены ошибки валидации
-    :return: md5 хеш для проверки через github action
+    Рассчитывает MD5 хеш для списка номеров строк.
+
+    :param row_numbers: Список целочисленных номеров строк csv-файла,
+                        на которых были найдены ошибки валидации.
+    :return: MD5 хеш для проверки через GitHub Action.
     """
     row_numbers.sort()
     return hashlib.md5(json.dumps(row_numbers).encode('utf-8')).hexdigest()
 
+
 def get_patterns(json_file_path: str):
     """
-    Loads a JSON file and returns its content.
+    Загружает JSON файл и возвращает его содержимое.
 
-    Parameters:
-    json_file_path (str): The path to the JSON file.
-
-    Returns:
-    Optional[Dict[str, Any] | List[Dict[str, Any]]]: The content of the JSON file as a dictionary or a list of dictionaries.
-    Returns None if an error occurs.
+    :param json_file_path: Путь к JSON файлу.
+    :return: Содержимое JSON файла в виде словаря или списка словарей.
+             Возвращает None, если произошла ошибка.
     """
     try:
         with open(json_file_path, 'r', encoding='utf-8') as f:
@@ -42,15 +49,13 @@ def get_patterns(json_file_path: str):
 
     return None
 
+
 def get_data(csv_file_path: str):
     """
-    Reads a CSV file with utf-16 encoding and ';' delimiter.
+    Читает CSV файл с кодировкой utf-16 и разделителем ';'.
 
-    Parameters:
-    csv_file_path (str): Path to the CSV file.
-
-    Returns:
-    Optional[pd.DataFrame]: DataFrame with data from the CSV file or None in case of an error.
+    :param csv_file_path: Путь к CSV файлу.
+    :return: DataFrame с данными из CSV файла или None в случае ошибки.
     """
     try:
         logging.info(f"Чтение файла: {csv_file_path}")
@@ -65,16 +70,14 @@ def get_data(csv_file_path: str):
         logging.error(f"Произошла ошибка при чтении файла: {e}")
     return None
 
+
 def validate_data_with_patterns(df: pd.DataFrame, patterns: dict[str, str]) -> list[int]:
     """
     Проверяет строки DataFrame на соответствие паттернам регулярных выражений.
 
-    Parameters:
-    df (pd.DataFrame): DataFrame с данными для проверки.
-    patterns (Dict[str, str]): Словарь с паттернами регулярных выражений.
-
-    Returns:
-    List[int]: Список индексов строк, которые не соответствуют хотя бы одному паттерну.
+    :param df: DataFrame с данными для проверки.
+    :param patterns: Словарь с паттернами регулярных выражений.
+    :return: Список индексов строк, которые не соответствуют хотя бы одному паттерну.
     """
     invalid_indexes = set()  # Используем set для хранения уникальных индексов
 
@@ -89,13 +92,37 @@ def validate_data_with_patterns(df: pd.DataFrame, patterns: dict[str, str]) -> l
 
     return list(invalid_indexes)
 
-# Пример использования
+
+def write_to_json(variant: str, checksum: str, file_path: str) -> None:
+    """
+    Создает JSON-объект с данными и записывает его в файл.
+
+    :param variant: Значение для поля "variant".
+    :param checksum: Значение для поля "checksum".
+    :param file_path: Путь к файлу, в который будет записан JSON.
+    """
+    try:
+        data = {
+            "variant": variant,
+            "checksum": checksum
+        }
+
+        with open(file_path, "w", encoding="utf-8") as json_file:
+            json.dump(data, json_file, indent=4)
+
+        logging.info(f"Данные успешно записаны в файл: {file_path}")
+        print(f"Данные успешно записаны в файл: {file_path}")
+
+    except Exception as e:
+        logging.error(f"Ошибка при записи данных в файл {file_path}: {e}")
+        print(f"Ошибка при записи данных в файл {file_path}: {e}")
+
+
 if __name__ == "__main__":
     # Загрузка паттернов
-    patterns = get_patterns(json_file_path)
-    df = get_data(csv_file_path)
+    patterns = get_patterns(JSON_FILE_PATH)
+    df = get_data(CSV_FILE_PATH)
 
     invalid_data = validate_data_with_patterns(df, patterns)
-    result_hash_sum = calculate_checksum(invalid_data)
-
-
+    checksum = calculate_checksum(invalid_data)
+    write_to_json(VARIANT, checksum, RESULT_FILE)
