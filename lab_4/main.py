@@ -1,10 +1,20 @@
 import json
 import os
 import random
+import logging
 import time
 from typing import List, Optional
 
 
+# Настройка логгирования
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler("app.log"),
+        logging.StreamHandler()
+    ]
+)
 class User:
     """
     Class representing a user.
