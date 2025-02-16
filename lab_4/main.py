@@ -55,8 +55,10 @@ class UserDatabase:
         if os.path.exists(self.db_filename):
             with open(self.db_filename, 'r') as f:
                 self.db = json.load(f)
+            logging.info(f"Database loaded from {self.db_filename}")
         else:
             self.db = {}
+            logging.info(f"New database created at {self.db_filename}")
 
     def save_db(self):
         """
@@ -64,6 +66,7 @@ class UserDatabase:
         """
         with open(self.db_filename, 'w') as f:
             json.dump(self.db, f, indent=4)
+        logging.info(f"Database saved to {self.db_filename}")
 
     def add_user(self, user: User):
         """
@@ -72,6 +75,7 @@ class UserDatabase:
         """
         self.db[user.user_id] = user.__dict__
         self.save_db()
+        logging.info(f"User added: {user}")
 
     def get_user(self, user_id: int) -> Optional[User]:
         """
@@ -81,7 +85,9 @@ class UserDatabase:
         """
         user_data = self.db.get(user_id)
         if user_data:
+            logging.info(f"User retrieved: ID={user_id}")
             return User(**user_data)
+        logging.warning(f"User not found: ID={user_id}")
         return None
 
     def delete_user(self, user_id: int):
@@ -92,7 +98,9 @@ class UserDatabase:
         if user_id in self.db:
             del self.db[user_id]
             self.save_db()
-
+            logging.info(f"User deleted: ID={user_id}")
+        else:
+            logging.warning(f"User not found for deletion: ID={user_id}")
 
 class NetworkService:
     """
