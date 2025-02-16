@@ -141,9 +141,13 @@ class UserService:
         Registers a user using an external service.
         :param user_id: The ID of the user to register.
         """
-        user_data = self.network_service.fetch_user_data(user_id)
-        user = User(user_id=user_data['user_id'], name=user_data['name'], email=user_data['email'])
-        self.user_db.add_user(user)
+        try:
+            user_data = self.network_service.fetch_user_data(user_id)
+            user = User(user_id=user_data['user_id'], name=user_data['name'], email=user_data['email'])
+            self.user_db.add_user(user)
+            logging.info(f"User registered successfully: ID={user_id}")
+        except Exception as e:
+            logging.error(f"Failed to register user ID={user_id}: {e}")
 
     def get_user_info(self, user_id: int) -> Optional[User]:
         """
@@ -153,7 +157,9 @@ class UserService:
         """
         user = self.user_db.get_user(user_id)
         if user:
+            logging.info(f"User info retrieved: ID={user_id}")
             return user
+        logging.warning(f"User info not found: ID={user_id}")
         return None
 
     def delete_user(self, user_id: int):
@@ -162,7 +168,7 @@ class UserService:
         :param user_id: The ID of the user to delete.
         """
         self.user_db.delete_user(user_id)
-
+        logging.info(f"User deletion attempted: ID={user_id}")
 
 class LogService:
     """
