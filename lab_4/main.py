@@ -201,36 +201,34 @@ class Application:
         Initializes an Application object.
         """
         self.db_filename = "user_db.json"
-        self.log_filename = "app.log"
         self.user_db = UserDatabase(self.db_filename)
         self.network_service = NetworkService()
         self.user_service = UserService(self.user_db, self.network_service)
-        self.log_service = LogService(self.log_filename)
 
     def run(self):
         """
         Runs the application.
         """
+        logging.info("Application started.")
         try:
-            self.log_service.log("Application started.")
             self.user_service.register_user(1)
             self.user_service.register_user(2)
 
             user = self.user_service.get_user_info(1)
             if user:
-                self.log_service.log(f"User found: {user}")
+                logging.info(f"User found: {user}")
 
             self.user_service.delete_user(2)
-            self.log_service.log("User with ID 2 deleted.")
+            logging.info("User with ID 2 deleted.")
 
             user = self.user_service.get_user_info(9999)
             if not user:
-                self.log_service.log("User with ID 9999 not found.")
+                logging.warning("User with ID 9999 not found.")
 
         except Exception as e:
-            self.log_service.log(f"Error occurred: {e}")
+            logging.error(f"Error occurred: {e}")
         finally:
-            self.log_service.log("Application finished.")
+            logging.info("Application finished.")
 
 
 if __name__ == "__main__":
