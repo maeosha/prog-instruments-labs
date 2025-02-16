@@ -117,11 +117,11 @@ class NetworkService:
         # Simulate network latency
         time.sleep(random.uniform(0.5, 1.5))
         if random.random() < 0.9:
+            logging.info(f"Data fetched successfully for user ID={user_id}")
             return {"user_id": user_id, "name": f"User{user_id}", "email": f"user{user_id}@gmail.com"}
         else:
+            logging.error(f"Failed to fetch data for user ID={user_id}")
             raise ValueError(f"Failed to fetch data for user_id {user_id}")
-
-
 class UserService:
     """
     Class for managing user-related operations.
