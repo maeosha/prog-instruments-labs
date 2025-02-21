@@ -5,8 +5,8 @@ import re
 
 import pandas as pd
 
-VARIANT = 10
-CSV_FILE_PATH = "10.csv"
+VARIANT = 41
+CSV_FILE_PATH = "41.csv"
 JSON_FILE_PATH = "patterns.json"
 RESULT_FILE = "result.json"
 
@@ -79,7 +79,7 @@ def validate_data_with_patterns(df: pd.DataFrame, patterns: dict[str, str]) -> l
     :param patterns: Словарь с паттернами регулярных выражений.
     :return: Список индексов строк, которые не соответствуют хотя бы одному паттерну.
     """
-    invalid_indexes = set()  # Используем set для хранения уникальных индексов
+    invalid_indexes = set()
 
     for column, pattern in patterns.items():
         if column in df.columns:
