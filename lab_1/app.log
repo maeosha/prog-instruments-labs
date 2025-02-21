@@ -1,0 +1,39 @@
+2025-02-18 23:17:48,003 - INFO - New database created at user_db.json
+2025-02-18 23:17:48,003 - INFO - Application started.
+2025-02-18 23:17:49,262 - ERROR - Failed to fetch data for user ID=1
+2025-02-18 23:17:49,262 - ERROR - Failed to register user ID=1: Failed to fetch data for user_id 1
+2025-02-18 23:17:50,660 - INFO - Data fetched successfully for user ID=2
+2025-02-18 23:17:50,661 - INFO - Database saved to user_db.json
+2025-02-18 23:17:50,661 - INFO - User added: User(id=2, name=User2, email=user2@gmail.com)
+2025-02-18 23:17:50,661 - INFO - User registered successfully: ID=2
+2025-02-18 23:17:50,661 - WARNING - User not found: ID=1
+2025-02-18 23:17:50,661 - WARNING - User info not found: ID=1
+2025-02-18 23:17:50,661 - INFO - Database saved to user_db.json
+2025-02-18 23:17:50,664 - INFO - User deleted: ID=2
+2025-02-18 23:17:50,664 - INFO - User deletion attempted: ID=2
+2025-02-18 23:17:50,664 - INFO - User with ID 2 deleted.
+2025-02-18 23:17:50,664 - WARNING - User not found: ID=9999
+2025-02-18 23:17:50,664 - WARNING - User info not found: ID=9999
+2025-02-18 23:17:50,664 - WARNING - User with ID 9999 not found.
+2025-02-18 23:17:50,664 - INFO - Application finished.
+2025-02-19 19:17:30,334 - INFO - Database loaded from user_db.json
+2025-02-19 19:17:30,335 - INFO - Application started.
+2025-02-19 19:17:31,327 - INFO - Data fetched successfully for user ID=1
+2025-02-19 19:17:31,328 - INFO - Database saved to user_db.json
+2025-02-19 19:17:31,328 - INFO - User added: User(id=1, name=User1, email=user1@gmail.com)
+2025-02-19 19:17:31,328 - INFO - User registered successfully: ID=1
+2025-02-19 19:17:32,090 - INFO - Data fetched successfully for user ID=2
+2025-02-19 19:17:32,090 - INFO - Database saved to user_db.json
+2025-02-19 19:17:32,090 - INFO - User added: User(id=2, name=User2, email=user2@gmail.com)
+2025-02-19 19:17:32,090 - INFO - User registered successfully: ID=2
+2025-02-19 19:17:32,091 - INFO - User retrieved: ID=1
+2025-02-19 19:17:32,091 - INFO - User info retrieved: ID=1
+2025-02-19 19:17:32,091 - INFO - User found: User(id=1, name=User1, email=user1@gmail.com)
+2025-02-19 19:17:32,091 - INFO - Database saved to user_db.json
+2025-02-19 19:17:32,091 - INFO - User deleted: ID=2
+2025-02-19 19:17:32,091 - INFO - User deletion attempted: ID=2
+2025-02-19 19:17:32,091 - INFO - User with ID 2 deleted.
+2025-02-19 19:17:32,091 - WARNING - User not found: ID=9999
+2025-02-19 19:17:32,091 - WARNING - User info not found: ID=9999
+2025-02-19 19:17:32,091 - WARNING - User with ID 9999 not found.
+2025-02-19 19:17:32,091 - INFO - Application finished.
